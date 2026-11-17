@@ -1,0 +1,22 @@
+[theme]
+base = "light"
+primaryColor = "#7c3aed"
+linkColor = "#6d28d9"
+backgroundColor = "#faf7ff"
+secondaryBackgroundColor = "#efe7fb"
+textColor = "#2a1f3d"
+borderColor = "#ddd0f5"
+font = "Nunito:https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
+headingFont = "Fraunces:https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
+baseRadius = "large"
+buttonRadius = "full"
+metricValueFontSize = "2rem"
+metricValueFontWeight = 800
+chartCategoricalColors = ["#e879b9", "#9b7ede", "#4f7fe0", "#f6c945", "#58a967"]
+
+[theme.sidebar]
+backgroundColor = "#2e1065"
+secondaryBackgroundColor = "#4c1d95"
+textColor = "#f5f0ff"
+borderColor = "#5b21b6"
+primaryColor = "#e879b9"
