@@ -403,7 +403,7 @@ with predict_tab:
 
                 bars = (
                     alt.Chart(prediction["probs"])
-                    .mark_bar(cornerRadiusEnd=8, size=22)
+                    .mark_bar(cornerRadiusEnd=4, size=22)
                     .encode(
                         x=alt.X(
                             "probability:Q",
@@ -421,7 +421,7 @@ with predict_tab:
                 )
                 labels = bars.mark_text(align="left", dx=6, fontWeight="bold").encode(
                     text=alt.Text("probability:Q", format=".0%"),
-                    color=alt.value("#2a1f3d"),
+                    color=alt.value("#e2e8f0"),
                 )
                 st.altair_chart(
                     bars + labels,
@@ -477,7 +477,7 @@ with explore_tab:
 
         dots = (
             alt.Chart(visible)
-            .mark_circle(size=90, stroke="white", strokeWidth=1)
+            .mark_circle(size=90, stroke="#0b1220", strokeWidth=1)
             .encode(
                 x=alt.X(f"{x_feature}:Q", title=FEATURES[x_feature][0],
                         scale=alt.Scale(zero=False)),
@@ -492,7 +492,7 @@ with explore_tab:
         you = (
             alt.Chart(pd.DataFrame([measurements]))
             .mark_point(shape="diamond", size=420, filled=True,
-                        color="#2a1f3d", stroke="white", strokeWidth=2)
+                        color="#f8fafc", stroke="#0b1220", strokeWidth=2)
             .encode(x=f"{x_feature}:Q", y=f"{y_feature}:Q",
                     tooltip=[alt.Tooltip(key, title=FEATURES[key][0]) for key in FEATURES])
         )
@@ -535,7 +535,7 @@ with insights_tab:
                 )
                 st.altair_chart(
                     alt.Chart(importance)
-                    .mark_bar(cornerRadiusEnd=8, color="#7c3aed")
+                    .mark_bar(cornerRadiusEnd=4, color="#3b82f6")
                     .encode(
                         x=alt.X("importance:Q", axis=alt.Axis(format="%"), title=None),
                         y=alt.Y("feature:N", sort="-x", title=None),
@@ -584,7 +584,7 @@ with insights_tab:
             )
             marker = (
                 alt.Chart(pd.DataFrame({vary: [measurements[vary]]}))
-                .mark_rule(color="#2a1f3d", strokeWidth=3, strokeDash=[6, 4])
+                .mark_rule(color="#f8fafc", strokeWidth=3, strokeDash=[6, 4])
                 .encode(x=f"{vary}:Q")
             )
             st.altair_chart(

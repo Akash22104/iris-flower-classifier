@@ -20,27 +20,27 @@ class SpeciesStyle(TypedDict):
 
 SPECIES_STYLE: dict[str, SpeciesStyle] = {
     "setosa": {
-        "petal": "#e879b9",
-        "petal_dark": "#be3d8a",
-        "tint": "#fde7f3",
+        "petal": "#f59e0b",
+        "petal_dark": "#b45309",
+        "tint": "#3a2a10",
         "lengths": (42, 46),  # (standards, falls): short, rounded petals
         "width": 30,
         "blurb": "Small and compact, with short, broad petals. "
         "The easiest species to tell apart.",
     },
     "versicolor": {
-        "petal": "#9b7ede",
-        "petal_dark": "#6d4bc4",
-        "tint": "#efe9fc",
+        "petal": "#14b8a6",
+        "petal_dark": "#0f766e",
+        "tint": "#0c3330",
         "lengths": (60, 66),
         "width": 24,
         "blurb": "The 'blue flag' iris. Medium-sized petals that "
         "overlap with virginica in some measurements.",
     },
     "virginica": {
-        "petal": "#4f7fe0",
-        "petal_dark": "#2c55b0",
-        "tint": "#e6eefc",
+        "petal": "#3b82f6",
+        "petal_dark": "#1d4ed8",
+        "tint": "#0f2350",
         "lengths": (72, 80),
         "width": 22,
         "blurb": "The largest of the three, with long, narrow petals "
@@ -87,7 +87,7 @@ def flower_svg(species, size=220):
         f'<g transform="translate({cx},{cy}) rotate({angle})">'
         f'<path d="{_petal_path(fall_len, width)}" fill="url(#fall)" '
         f'stroke="{style["petal_dark"]}" stroke-width="1.2"/>'
-        f'<path d="M0,-6 L0,{-fall_len * 0.55}" stroke="#f6c945" '
+        f'<path d="M0,-6 L0,{-fall_len * 0.55}" stroke="#e2e8f0" '
         f'stroke-width="5" stroke-linecap="round"/>'
         f"</g>"
         for angle in (180, 122, 238)
@@ -105,13 +105,13 @@ def flower_svg(species, size=220):
       <stop offset="1" stop-color="{style['petal_dark']}"/>
     </linearGradient>
   </defs>
-  <path d="M110,140 C108,185 112,215 110,258" stroke="#3f8f4f"
+  <path d="M110,140 C108,185 112,215 110,258" stroke="#3d7a6a"
    stroke-width="6" fill="none" stroke-linecap="round"/>
-  <path d="M110,250 C80,220 70,190 74,160 C90,190 102,215 110,250Z" fill="#58a967"/>
-  <path d="M110,252 C140,226 152,196 150,170 C134,196 120,220 110,252Z" fill="#4a9a5a"/>
+  <path d="M110,250 C80,220 70,190 74,160 C90,190 102,215 110,250Z" fill="#4b8b7a"/>
+  <path d="M110,252 C140,226 152,196 150,170 C134,196 120,220 110,252Z" fill="#3d7a6a"/>
   {falls}
   {standards}
-  <circle cx="{cx}" cy="{cy}" r="7" fill="#f6c945"/>
+  <circle cx="{cx}" cy="{cy}" r="7" fill="#e2e8f0"/>
 </svg>"""
 
 
@@ -132,79 +132,109 @@ def _scattered_petals(rng, count, width, height, colors, opacity):
     return "".join(shapes)
 
 
+def _grid(width, height, step, color, opacity):
+    lines = [
+        f'<path d="M{x},0 V{height}" stroke="{color}" opacity="{opacity}"/>'
+        for x in range(0, width + 1, step)
+    ] + [
+        f'<path d="M0,{y} H{width}" stroke="{color}" opacity="{opacity}"/>'
+        for y in range(0, height + 1, step)
+    ]
+    return "".join(lines)
+
+
+def _circuit_traces(rng, count, width, height, colors):
+    """Right-angled 'circuit board' traces ending in small nodes."""
+    traces = []
+    for _ in range(count):
+        x = rng.randrange(0, width, 40)
+        y = rng.randrange(0, height, 40)
+        points = [(x, y)]
+        for _ in range(rng.randint(2, 4)):
+            if rng.random() < 0.5:
+                x += rng.choice([-1, 1]) * rng.randint(2, 6) * 40
+            else:
+                y += rng.choice([-1, 1]) * rng.randint(2, 5) * 40
+            points.append((x, y))
+        color = rng.choice(colors)
+        path = "M" + " L".join(f"{px},{py}" for px, py in points)
+        traces.append(
+            f'<path d="{path}" stroke="{color}" stroke-width="2" fill="none" '
+            f'opacity="0.28"/>'
+            f'<circle cx="{points[-1][0]}" cy="{points[-1][1]}" r="5" '
+            f'fill="none" stroke="{color}" stroke-width="2" opacity="0.5"/>'
+            f'<circle cx="{points[0][0]}" cy="{points[0][1]}" r="3" '
+            f'fill="{color}" opacity="0.5"/>'
+        )
+    return "".join(traces)
+
+
 def page_background_svg():
-    """Soft garden backdrop for the whole page."""
+    """Dark blueprint backdrop: grid, circuit traces and soft glows."""
     rng = random.Random(7)
     w, h = 1600, 1000
-    colors = ["#e879b9", "#9b7ede", "#4f7fe0", "#f6c945"]
-    petals = _scattered_petals(rng, 38, w, h, colors, 0.16)
-
-    # Gentle grass blades along the bottom edge.
-    blades = []
-    for i in range(70):
-        x = i * (w / 70) + rng.uniform(-8, 8)
-        tall = rng.uniform(60, 170)
-        lean = rng.uniform(-30, 30)
-        blades.append(
-            f'<path d="M{x:.0f},{h} Q{x + lean / 2:.0f},{h - tall / 2:.0f} '
-            f'{x + lean:.0f},{h - tall:.0f}" stroke="#58a967" '
-            f'stroke-width="{rng.uniform(2, 5):.1f}" fill="none" opacity="0.22"/>'
-        )
-
+    traces = _circuit_traces(rng, 26, w, h, ["#38bdf8", "#14b8a6", "#3b82f6"])
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}"
  preserveAspectRatio="xMidYMid slice">
   <defs>
-    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#fbf6ff"/>
-      <stop offset="0.55" stop-color="#f3ecff"/>
-      <stop offset="1" stop-color="#eaf6ee"/>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070d1a"/>
+      <stop offset="0.6" stop-color="#0b1426"/>
+      <stop offset="1" stop-color="#08161a"/>
     </linearGradient>
-    <radialGradient id="glow1" cx="0.15" cy="0.1" r="0.5">
-      <stop offset="0" stop-color="#f9c6e3" stop-opacity="0.7"/>
-      <stop offset="1" stop-color="#f9c6e3" stop-opacity="0"/>
+    <radialGradient id="glow1" cx="0.12" cy="0.08" r="0.55">
+      <stop offset="0" stop-color="#1d4ed8" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#1d4ed8" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="glow2" cx="0.9" cy="0.3" r="0.55">
-      <stop offset="0" stop-color="#c9d8ff" stop-opacity="0.7"/>
-      <stop offset="1" stop-color="#c9d8ff" stop-opacity="0"/>
+    <radialGradient id="glow2" cx="0.92" cy="0.85" r="0.55">
+      <stop offset="0" stop-color="#0f766e" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#0f766e" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="{w}" height="{h}" fill="url(#sky)"/>
+  <rect width="{w}" height="{h}" fill="url(#base)"/>
+  {_grid(w, h, 40, "#38bdf8", 0.05)}
+  {_grid(w, h, 200, "#38bdf8", 0.09)}
   <rect width="{w}" height="{h}" fill="url(#glow1)"/>
   <rect width="{w}" height="{h}" fill="url(#glow2)"/>
-  {petals}
-  {''.join(blades)}
+  {traces}
 </svg>"""
 
 
 def hero_svg():
-    """Banner art: a row of irises in all three colors over a dusk gradient."""
+    """Banner art: a scanner-style display analysing three irises."""
     rng = random.Random(3)
     w, h = 1200, 260
     flowers = []
-    for i, species in enumerate(["setosa", "versicolor", "virginica"] * 3):
-        x = 640 + i * 62 + rng.uniform(-10, 10)
-        y = 40 + rng.uniform(0, 70)
-        scale = rng.uniform(0.55, 0.85)
+    for i, species in enumerate(["setosa", "versicolor", "virginica"]):
+        x = 740 + i * 170
+        y = 30 + rng.uniform(0, 20)
         inner = flower_svg(species)
         inner = inner[inner.index(">") + 1 : inner.rindex("</svg>")]
+        color = SPECIES_STYLE[species]["petal"]
         flowers.append(
-            f'<g transform="translate({x:.0f},{y:.0f}) scale({scale:.2f}) '
-            f'translate(-110,0)" opacity="0.95">{inner}</g>'
+            f'<g transform="translate({x},{y}) scale(0.78) translate(-110,0)">'
+            f"{inner}</g>"
+            # Targeting brackets around each flower.
+            f'<g stroke="{color}" stroke-width="3" fill="none" opacity="0.9">'
+            f'<path d="M{x - 70},{y + 10} v-14 h14"/>'
+            f'<path d="M{x + 70},{y + 10} v-14 h-14"/>'
+            f'<path d="M{x - 70},{y + 200} v14 h14"/>'
+            f'<path d="M{x + 70},{y + 200} v14 h-14"/></g>'
         )
-    petals = _scattered_petals(
-        rng, 22, w * 0.55, h, ["#ffffff", "#f9c6e3", "#c9d8ff"], 0.18
-    )
+    traces = _circuit_traces(rng, 10, int(w * 0.6), h, ["#38bdf8", "#14b8a6"])
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}"
  preserveAspectRatio="xMaxYMid slice">
   <defs>
-    <linearGradient id="dusk" x1="0" y1="0" x2="1" y2="0.6">
-      <stop offset="0" stop-color="#4c1d95"/>
-      <stop offset="0.5" stop-color="#7c3aed"/>
-      <stop offset="1" stop-color="#db7cc0"/>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0.4">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="0.55" stop-color="#10213f"/>
+      <stop offset="1" stop-color="#0d3b4a"/>
     </linearGradient>
   </defs>
-  <rect width="{w}" height="{h}" fill="url(#dusk)"/>
-  {petals}
+  <rect width="{w}" height="{h}" fill="url(#steel)"/>
+  {_grid(w, h, 30, "#38bdf8", 0.08)}
+  {traces}
+  <path d="M0,{h - 3} H{w}" stroke="#38bdf8" stroke-width="3" opacity="0.8"/>
   {''.join(flowers)}
 </svg>"""
 
@@ -215,7 +245,7 @@ def svg_data_uri(svg):
 
 
 def base_css():
-    """Page background, hero banner and frosted-glass panels.
+    """Page background, hero banner and dark glass panels.
 
     Panels are targeted by their Streamlit container keys
     (`.st-key-<key>`), so styling stays scoped to this app's own blocks.
@@ -228,23 +258,33 @@ def base_css():
   background: url("{background}") center / cover fixed no-repeat;
 }}
 .st-key-hero {{
-  background: url("{hero}") right center / cover no-repeat;
-  border-radius: 1.25rem;
+  background:
+    linear-gradient(90deg, rgba(11, 18, 32, 0.92) 0%,
+      rgba(11, 18, 32, 0.55) 45%, rgba(11, 18, 32, 0) 70%),
+    url("{hero}") right center / cover no-repeat;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(56, 189, 248, 0.35);
   padding: 2rem 2.25rem;
-  box-shadow: 0 18px 40px -20px rgba(76, 29, 149, 0.6);
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.08),
+    0 20px 45px -22px rgba(14, 165, 233, 0.55);
 }}
-.st-key-hero h1, .st-key-hero p {{
-  color: #ffffff !important;
-  text-shadow: 0 2px 12px rgba(30, 10, 60, 0.35);
+.st-key-hero h1 {{
+  color: #f8fafc !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}}
+.st-key-hero p {{
+  color: #cbd5e1 !important;
 }}
 [class*="st-key-panel_"] {{
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(124, 58, 237, 0.14);
-  border-radius: 1.25rem;
+  background: rgba(10, 18, 34, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-top: 3px solid #3b82f6;
+  border-radius: 0.6rem;
   padding: 1.25rem 1.4rem;
-  box-shadow: 0 10px 30px -18px rgba(76, 29, 149, 0.45);
+  box-shadow: 0 14px 34px -20px rgba(0, 0, 0, 0.8);
 }}
 </style>
 """
@@ -256,8 +296,10 @@ def result_card_css(species):
 <style>
 .st-key-panel_result {{
   background: linear-gradient(160deg, {style['tint']} 0%,
-    rgba(255, 255, 255, 0.85) 70%);
-  border: 2px solid {style['petal']}55;
+    rgba(10, 18, 34, 0.9) 75%);
+  border: 1px solid {style['petal']}66;
+  border-top: 3px solid {style['petal']};
+  box-shadow: 0 0 28px -10px {style['petal']}88;
   transition: background 0.4s ease, border-color 0.4s ease;
 }}
 </style>

@@ -1,22 +1,23 @@
 [theme]
-base = "light"
-primaryColor = "#7c3aed"
-linkColor = "#6d28d9"
-backgroundColor = "#faf7ff"
-secondaryBackgroundColor = "#efe7fb"
-textColor = "#2a1f3d"
-borderColor = "#ddd0f5"
-font = "Nunito:https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
-headingFont = "Fraunces:https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap"
-baseRadius = "large"
-buttonRadius = "full"
+base = "dark"
+primaryColor = "#2563eb"
+linkColor = "#38bdf8"
+backgroundColor = "#0b1220"
+secondaryBackgroundColor = "#16213a"
+textColor = "#e2e8f0"
+borderColor = "#24324f"
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "'Space Grotesk':https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&display=swap"
+codeFont = "'JetBrains Mono':https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+baseRadius = "small"
+buttonRadius = "small"
 metricValueFontSize = "2rem"
-metricValueFontWeight = 800
-chartCategoricalColors = ["#e879b9", "#9b7ede", "#4f7fe0", "#f6c945", "#58a967"]
+metricValueFontWeight = 700
+chartCategoricalColors = ["#f59e0b", "#14b8a6", "#3b82f6", "#38bdf8", "#94a3b8"]
 
 [theme.sidebar]
-backgroundColor = "#2e1065"
-secondaryBackgroundColor = "#4c1d95"
-textColor = "#f5f0ff"
-borderColor = "#5b21b6"
-primaryColor = "#e879b9"
+backgroundColor = "#060b16"
+secondaryBackgroundColor = "#111a2e"
+textColor = "#e2e8f0"
+borderColor = "#1e2a44"
+primaryColor = "#14b8a6"
